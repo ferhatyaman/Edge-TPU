@@ -310,4 +310,57 @@ evaluate_model(tflite_model_quant_file, model_type="Quantized")
 """So you now have an integer quantized a model with almost no difference in the accuracy, compared to the float model.
 
 To learn more about other quantization strategies, read about [TensorFlow Lite model optimization](https://www.tensorflow.org/lite/performance/model_optimization).
+
+## Compile for the Edge TPU
+
+Finally, we're ready to compile the model for the Edge TPU.
+
+First download the [Edge TPU Compiler](https://coral.ai/docs/edgetpu/compiler/):
 """
+
+! curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+! echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+
+! sudo apt-get update
+
+! sudo apt-get install edgetpu-compiler
+
+! edgetpu_compiler mnist_model_quant.tflite
+
+"""That's it.
+
+The compiled model uses the same filename but with "_edgetpu" appended at the end.
+
+## Download the model
+
+You can download the converted model and labels file from Colab like this:
+"""
+
+from google.colab import files
+
+files.download('mnist_model_quant_edgetpu.tflite')
+files.download('mnist_labels.txt')
+
+"""If you get a "Failed to fetch" error here, it's probably because the files weren't done saving. So just wait a moment and try again.
+
+Also look out for a browser popup that might need approval to download the files.
+
+## Run the model on the Edge TPU
+
+You can now run the model on your Coral device with acceleration on the Edge TPU.
+
+To get started, try using your `.tflite` model with [this code for image classification with the TensorFlow Lite API](https://github.com/google-coral/tflite/tree/master/python/examples/classification). 
+
+Just follow the instructions on that page to set up your device, copy the `mobilenet_v2_1.0_224_quant_edgetpu.tflite` and `flower_labels.txt` files to your Coral Dev Board or device with a Coral Accelerator, and pass it a flower photo like this:
+
+```
+python3 classify_image.py \
+  --model mnist_model_quant_edgetpu.tflite \
+  --labels mnist_labels.txt \
+  --input handwritten.jpg
+```
+
+Check out more examples for running inference at [coral.ai/examples](https://coral.ai/examples/#code-examples/).
+"""
+
