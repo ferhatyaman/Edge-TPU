@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-r"""Example using PyCoral to classify a given image using an Edge TPU.
+"""Example using PyCoral to classify a given image using an Edge TPU.
 
 To run this code, you must attach an Edge TPU attached to the host and
 install the Edge TPU runtime (`libedgetpu.so`) and `tflite_runtime`. For
@@ -20,12 +20,10 @@ device setup instructions, see coral.ai/docs/setup.
 
 Example usage:
 ```
-bash examples/install_requirements.sh classify_image.py
-
-python3 examples/classify_image.py \
-  --model test_data/mobilenet_v2_1.0_224_inat_bird_quant_edgetpu.tflite  \
-  --labels test_data/inat_bird_labels.txt \
-  --input test_data/parrot.jpg
+python3 classify-image.py \
+  --model mnist_model_quant_edgetpu.tflite  \
+  --labels mnist_labels.txt \
+  --input testSample/img_1.jpg
 ```
 """
 

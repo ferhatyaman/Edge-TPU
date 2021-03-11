@@ -1,7 +1,6 @@
-/Coral-Dev-Board-Mini-datasheet.pdf
-/Coral-Dev-Board-datasheet.pdf
 /Post-Quantization
-/TPU-Attack.pptx
 /flashcard_arm64.img
 .DS_Store
 .vscode
+*.pptx
+*.pdf

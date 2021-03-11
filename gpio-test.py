@@ -1,7 +1,7 @@
 from periphery import GPIO
 import time
 
-led = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
+led = GPIO("/dev/gpiochip0", 39, "out")  # pin 40
 # button = GPIO("/dev/gpiochip4", 13, "in")  # pin 36
 
 try:
