@@ -30,6 +30,7 @@ python3 classify-image.py \
 
 import argparse
 import time
+from periphery import GPIO
 
 from PIL import Image
 from pycoral.adapters import classify
