@@ -13,4 +13,3 @@ try:
 finally:
   led.write(False)
   led.close()
-  button.close()

@@ -23,7 +23,8 @@ Example usage:
 python3 classify-image.py \
   --model mnist_model_quant_edgetpu.tflite  \
   --labels mnist_labels.txt \
-  --input testSample/img_1.jpg
+  --input testSample/img_1.jpg \
+  --count 10000
 ```
 """
 
@@ -64,12 +65,16 @@ def main():
   image = Image.open(args.input).resize(size, Image.ANTIALIAS)
   common.set_input(interpreter, image)
 
+  trigger = GPIO("/dev/gpiochip0", 39, "out")  # pin 40
+
   print('----INFERENCE TIME----')
   print('Note: The first inference on Edge TPU is slow because it includes',
         'loading the model into Edge TPU memory.')
   for _ in range(args.count):
     start = time.perf_counter()
+    trigger.write(True)
     interpreter.invoke()
+    trigger.write(False)
     inference_time = time.perf_counter() - start
     classes = classify.get_classes(interpreter, args.top_k, args.threshold)
     print('%.1fms' % (inference_time * 1000))
