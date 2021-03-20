@@ -66,7 +66,7 @@ def main():
   image = Image.open(args.input).resize(size, Image.ANTIALIAS)
   common.set_input(interpreter, image)
 
-  trigger = GPIO("/dev/gpiochip0", 39, "out")  # pin 40
+  trigger = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
 
   print('----INFERENCE TIME----')
   print('Note: The first inference on Edge TPU is slow because it includes',
