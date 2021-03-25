@@ -72,7 +72,7 @@ def main():
   print('Note: The first inference on Edge TPU is slow because it includes',
         'loading the model into Edge TPU memory.')
   #for _ in range(args.count):
-  while(1)
+  while(1):
     start = time.perf_counter()
     trigger.write(True)
     interpreter.invoke()
