@@ -67,8 +67,10 @@ def main():
   print('----INFERENCE TIME----')
   print('Note: The first inference on Edge TPU is slow because it includes',
         'loading the model into Edge TPU memory.')
-  for i in range(350):
-    input_image_name = "testSample/img_"+ str(i) + ".jpg"
+  #for i in range(1,351):
+  while 1:
+    #input_image_name = "./testSample/img_"+ str(i) + ".jpg"
+    input_image_name = "./testSample/img_1.jpg"
     image = Image.open(input_image_name).resize(size, Image.ANTIALIAS)
     common.set_input(interpreter, image)
 
