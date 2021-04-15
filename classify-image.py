@@ -79,14 +79,14 @@ def main():
     interpreter.invoke()
     trigger.write(False)
     inference_time = time.perf_counter() - start
-    print('%.1fms' % (inference_time * 1000))
+    print('%.6fms' % (inference_time * 1000))
     
     classes = classify.get_classes(interpreter, args.top_k, args.threshold)
 
-    print('RESULTS for image ', i)
+    print('RESULTS for image ', 1)
     for c in classes:
-      print('%s: %.5f' % (labels.get(c.id, c.id), c.score))
-    time.sleep(2)
+      print('%s: %.6f' % (labels.get(c.id, c.id), c.score))
+    #time.sleep(2)
 
 
 if __name__ == '__main__':
