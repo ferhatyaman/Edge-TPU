@@ -1,17 +1,3 @@
-# Lint as: python3
-# Copyright 2019 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 """Example using PyCoral to classify a given image using an Edge TPU.
 
 To run this code, you must attach an Edge TPU attached to the host and
@@ -28,7 +14,7 @@ python3 classify-image.py \
 
 import argparse
 import time
-from periphery import GPIO
+from periphery import GPIO, Serial
 import numpy
 
 from PIL import Image
@@ -64,6 +50,8 @@ def main():
   size = [height, width]
 
   trigger = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
+  # UART3, 9600 baud
+  uart3 = Serial("/dev/ttymxc2", 115200)
 
   print('----INFERENCE TIME----')
   print('Note: The first inference on Edge TPU is slow because it includes',
@@ -73,20 +61,27 @@ def main():
     #input_image_name = "./testSample/img_"+ str(i) + ".jpg"
     #input_image_name = "./testSample/img_1.jpg"
     #image = Image.open(input_image_name).resize(size, Image.ANTIALIAS)
-    arr = numpy.random.randint(0,255,(28,28), dtype='uint8')
+    #arr = numpy.random.randint(0,255,(28,28), dtype='uint8')
+    arr = uart3.read(784)
+    #print(list(arr))
+    arr = numpy.array(list(arr), dtype='uint8')
+    arr = numpy.reshape(arr, (28,28))
     image = Image.fromarray(arr, 'L').resize(size, Image.ANTIALIAS)
     common.set_input(interpreter, image)
-
+    #inspector_start = int.from_bytes(uart3.read(1, 1), 'big')
+    #print("read {:d} bytes: _{:s}_".format(len(inspector_start), inspector_start))
+    #print("Start Signal:", inspector_start)
     start = time.perf_counter()
     trigger.write(True)
     interpreter.invoke()
     trigger.write(False)
     inference_time = time.perf_counter() - start
+    uart3.write(arr.tobytes())
     print('%.6fms' % (inference_time * 1000))
     
     classes = classify.get_classes(interpreter, args.top_k, args.threshold)
 
-    print('RESULTS for image ', 1)
+    #print('RESULTS for image ', 1)
     for c in classes:
       print('%s: %.6f' % (labels.get(c.id, c.id), c.score))
     #time.sleep(2)

@@ -23,13 +23,14 @@ Example usage:
 python3 classify-image.py \
   --model mnist_model_quant_edgetpu.tflite  \
   --labels mnist_labels.txt \
+  --input testSample/img_1.jpg \
+  --count 10000
 ```
 """
 
 import argparse
 import time
 from periphery import GPIO
-import numpy
 
 from PIL import Image
 from pycoral.adapters import classify
@@ -43,7 +44,7 @@ def main():
       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument('-m', '--model', required=True,
                       help='File path of .tflite file.')
-  parser.add_argument('-i', '--input',
+  parser.add_argument('-i', '--input', required=True,
                       help='Image to be classified.')
   parser.add_argument('-l', '--labels',
                       help='File path of labels file.')
@@ -62,34 +63,28 @@ def main():
 
   _, height, width = interpreter.get_input_details()[0]['shape']
   size = [height, width]
+  image = Image.open(args.input).resize(size, Image.ANTIALIAS)
+  common.set_input(interpreter, image)
 
   trigger = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
 
   print('----INFERENCE TIME----')
   print('Note: The first inference on Edge TPU is slow because it includes',
         'loading the model into Edge TPU memory.')
-  #for i in range(1,351):
-  while 1:
-    #input_image_name = "./testSample/img_"+ str(i) + ".jpg"
-    #input_image_name = "./testSample/img_1.jpg"
-    #image = Image.open(input_image_name).resize(size, Image.ANTIALIAS)
-    arr = numpy.random.randint(0,255,(28,28), dtype='uint8')
-    image = Image.fromarray(arr, 'L').resize(size, Image.ANTIALIAS)
-    common.set_input(interpreter, image)
-
+  #for _ in range(args.count):
+  while(1):
     start = time.perf_counter()
     trigger.write(True)
-    interpreter.invoke()
+    time.sleep(0.0005)
     trigger.write(False)
+    #interpreter.invoke()
     inference_time = time.perf_counter() - start
-    print('%.6fms' % (inference_time * 1000))
-    
-    classes = classify.get_classes(interpreter, args.top_k, args.threshold)
+    #classes = classify.get_classes(interpreter, args.top_k, args.threshold)
+    print('%.1fms' % (inference_time * 1000))
 
-    print('RESULTS for image ', 1)
-    for c in classes:
-      print('%s: %.6f' % (labels.get(c.id, c.id), c.score))
-    #time.sleep(2)
+  print('-------RESULTS--------')
+  for c in classes:
+    print('%s: %.5f' % (labels.get(c.id, c.id), c.score))
 
 
 if __name__ == '__main__':
