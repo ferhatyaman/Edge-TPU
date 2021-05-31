@@ -76,7 +76,8 @@ def main():
     interpreter.invoke()
     trigger.write(False)
     inference_time = time.perf_counter() - start
-    uart3.write(arr.tobytes())
+    output_tensor = interpreter.get_tensor(1)[0]
+    uart3.write(output_tensor.tobytes())
     print('%.6fms' % (inference_time * 1000))
     
     classes = classify.get_classes(interpreter, args.top_k, args.threshold)
