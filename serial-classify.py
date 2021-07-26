@@ -52,6 +52,7 @@ def main():
   trigger = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
   # UART3, 9600 baud
   uart3 = Serial("/dev/ttymxc2", 115200)
+  input_details = interpreter.get_input_details()[0]
 
   print('----INFERENCE TIME----')
   print('Note: The first inference on Edge TPU is slow because it includes',
@@ -66,8 +67,9 @@ def main():
     #print(list(arr))
     arr = numpy.array(list(arr), dtype='uint8')
     arr = numpy.reshape(arr, (28,28))
-    image = Image.fromarray(arr, 'L').resize(size, Image.ANTIALIAS)
-    common.set_input(interpreter, image)
+    #image = Image.fromarray(arr, 'L').resize(size, Image.ANTIALIAS)
+    #common.set_input(interpreter, image)
+    interpreter.set_tensor(input_details["index"], arr)
     #inspector_start = int.from_bytes(uart3.read(1, 1), 'big')
     #print("read {:d} bytes: _{:s}_".format(len(inspector_start), inspector_start))
     #print("Start Signal:", inspector_start)
